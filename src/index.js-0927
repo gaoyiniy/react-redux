@@ -1,0 +1,68 @@
+import { createStore, combineReducers, applyMiddleware } from "redux"
+import * as test from "redux"
+// console.log(test)
+
+const todos = (state = [1], action) => {
+  switch (action.type) {
+    case "ADD":
+      return state.concat(action.text)
+    default:
+      return state
+  }
+}
+
+const todos1 = (state = [2], action) => {
+  switch (action.type) {
+    case "ADD1":
+      return state.concat(action.text, "other reducer")
+    default:
+      return state
+  }
+}
+
+const logger = ({ getState, dispatch }) => {
+  return next => action => {
+    console.log("will dispatch", action, getState())
+
+    // Call the next dispatch method in the middleware chain.
+    const returnValue = next(action)
+
+    console.log("state after dispatch", getState())
+
+    // This will likely be the action itself, unless
+    // a middleware further in chain changed it.
+    return returnValue
+  }
+}
+
+// const store = createStore(todos, ["hello！"], applyMiddleware(logger))
+const store = createStore(combineReducers({ todos }))
+
+const handleChange = () => {
+  console.log(store.getState(), "subscribe")
+}
+
+const unSubscribe = store.subscribe(handleChange)
+
+var a = store.dispatch({
+  type: "ADD",
+  text: "redux"
+})
+
+// store.replaceReducer(todos1)
+
+// var a = store.dispatch({
+//   type: "ADD1",
+//   text: "redux1"
+// })
+
+console.log(a)
+
+// unSubscribe() // 取消订阅
+
+// store.dispatch({
+//   type: "ADD",
+//   text: "redux1"
+// })
+
+console.log(store.getState())
